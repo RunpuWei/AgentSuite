@@ -1,0 +1,156 @@
+task_id,issue_reason,fix
+Cross-8,"The environment provides conflicting location information for the query ""Halifax"". The `Search_Attraction_Location` tool returns an ID for Halifax, UK, while the `Search_Hotel_Destination` tool returns an ID for Halifax, Canada. The ground-truth incorrectly proceeds to search for attractions in the UK and hotels in Canada for the same trip.",The function output needs to be fixed
+Cross-60,"The `Search_Flights` function call is missing the `adults` parameter with a value of 2, which contradicts the user's request for a flight for 'My wife and I'. The call defaults to 1 adult instead.",The adult parameter of Search_Flights function call must be specified to be 2
+Cross-65,"The `Search_Flights` function call is flawed because it omits the `adults` parameter. The user's prompt specifies ""My wife and I"", which requires `adults: 2`, but the call defaults to 1 adult, contradicting the user's request.",The adult parameter of Search_Flights function call must be specified to be 2
+Hotels-82,"The function call `Get_Hotel_Details` for hotel_id ""522298"" is malformed. It includes `arrival_date` and `departure_date` as arguments, but the function's schema only defines the `hotel_id` parameter.",Remove the redundant `arrival_date` and `departure_date` arguments
+Attraction-67,"The ground-truth is flawed because it calls `Get_Attraction_Details` for an attraction that is based in Dublin, not Belfast, which contradicts the user's explicit location constraint. The agent should have filtered the initial search results by city.",Remove the Get_Attraction_Details call for prvuzxbvgyxx-titanic-experience-and-giants-causeway-tour
+Attraction-65,"The ground-truth trajectory contradicts the user's instruction to check the attractions sequentially starting from the first one. It checks the second attraction in the search results first, finds it's too expensive, and only then checks the first attraction. This is an illogical and inefficient sequence of calls.",Remove the Get_Attraction_Details call for pr24yeqj5eyl-history-themed-walking-tour-in-lower-manhattan
+Attraction-63,"The ground-truth is flawed because it makes a `Get_Attraction_Details` call for an attraction that is not in Vienna (it's in Greece), directly contradicting the user's request. The agent should have filtered the search results by location first.",Remove the first Get_Attraction_Details function call
+Cross-89,"The `pick_up_time` argument in the `Search_Taxi` function call is incorrect. The flight lands at 13:20, and the user requested a taxi for one hour after landing (14:20), but the ground-truth call specifies a pickup time of 12:20.","Modify the Search_Taxi call to: {
+  ""name"": ""Search_Taxi"",
+  ""arguments"": {
+  ""pick_up_place_id"": ""ChIJR0lA1VBmwokR8BGfSBOyT-w"",
+  ""drop_off_place_id"": ""ChIJjUGQIPhYwokRHeD9KPkNSfE"",
+  ""pick_up_date"": ""2024-11-25"",
+  ""pick_up_time"": ""14:20""
+  }
+  }"
+Cross-385,"The ground-truth function calls for `Search_Taxi` and `Search_Hotels_By_Coordinates` use the date '2024-12-25', which contradicts the user's prompt specifying 'November 25, 2024'.",Hotels_By_coordinates into 2024-11-25 and 2024-11-26 (from December to November)
+Cross-347,"The `sort_by` argument in the `Search_Hotels` function call is `""popularitye""`, which is a misspelling of the valid enum value `""popularity""` and therefore violates the function's schema.","Fix the typo in the sort_by argument into ""polularity"""
+Cross-394,The `query` argument in the `Taxi_Search_Location` function call is misspelled as 'BJack Brooks Regional Airport' instead of 'Jack Brooks Regional Airport'.,"Fix the typo in Taxi_Search_Location (""Jack Brooks Regional Airport"")"
+Cross-352,"The final `Search_Flights` call uses `departDate=""2024-11-08""`, which is incorrect. Based on the previous `Get_Room_Availability` call, the cheapest day is November 1st. The chosen date contradicts the available information and the user's request to find the cheapest day.","Fix the Search_Flight function call: {
+  ""name"": ""Search_Flights"",
+  ""arguments"": {
+  ""fromId"": ""TFU.AIRPORT"",
+  ""toId"": ""ORD.AIRPORT"",
+  ""departDate"": ""2024-11-01""
+  }
+  }"
+Car-Rental-137,The `pick_up_date` and `drop_off_date` arguments in the `Search_Car_Rentals` function call are incorrect. The ground-truth uses '2024-12-05' and '2024-12-08' instead of the user-specified '2024-12-07' and '2024-12-09'.,Fix the pickup and dropoff date into '2024-12-07' and '2024-12-09'.
+Car-Rental-41,"The `pick_up_time` argument in the `Search_Car_Rentals` function call is ""11:00"", which contradicts the user's requested pick-up time of ""14:00"".","Fix the pick_up_time to ""14:00"""
+Cross-256,"The `Search_Car_Rentals` function call uses incorrect latitude and longitude values for the pickup and drop-off location. The coordinates provided are for Seattle, not Las Vegas, which contradicts the user's request and the information from the preceding `Search_Car_Location` call.","Fix the latitude/longitude of Search_Car_Rental function call: {
+  ""name"": ""Search_Car_Rentals"",
+  ""arguments"": {
+  ""pick_up_latitude"": 36.0828018188477,
+  ""pick_up_longitude"": -115.15299987793,
+  ""drop_off_latitude"": 36.0828018188477,
+  ""drop_off_longitude"": -115.15299987793,
+  ""pick_up_date"": ""2024-12-16"",
+  ""drop_off_date"": ""2024-12-24"",
+  ""pick_up_time"": ""10:00"",
+  ""drop_off_time"": ""10:00""
+  }
+  }"
+Flights-76,"The `date` parameter for the second leg in the `Get_Min_Price_Multi_Stops` function call is incorrect. The user requested a four-day stay in Barcelona, which would mean a departure date of '2024-12-14', but the ground-truth call uses '2024-12-12'.",Fix the Get_Min_Price_Multi_Stops call's second leg date from 2024-12-12 to 2024-12-14
+Car-Rental-56,"The `pick_up_date` and `drop_off_date` arguments in the `Search_Car_Rentals` function call are incorrect. The user specified Halloween (October 31st), but the ground-truth uses November 1st and 2nd.",Fix the dates in the Search_Car_Rentals call into: pick_up_date of 2024-10-31 and drop_off_date of 2024-11-01
+Cross-303,"The ground-truth function call `Search_Hotels_By_Coordinates` has incorrect values for `arrival_date` and `departure_date`. The user specified the year 2024, but the function call uses 2025. This error is also present in the subsequent `Search_Taxi` call's `pick_up_date`.",Fix the dates in Search_Hotels_By_Coordinates and Search_Taxi calls from 2024 to 2025
+Cross-304,"The user requested to book a hotel for ""New Year of 2024"", but the ground-truth function calls for `Search_Hotels_By_Coordinates` and `Search_Taxi` use the year 2025 for the `arrival_date`, `departure_date`, and `pick_up_date` arguments, which contradicts the prompt.",Fix the dates in Search_Hotels_By_Coordinates and Search_Taxi calls from 2024 to 2025
+Car-Rental-29,"The `pick_up_date`, `pick_up_time`, `drop_off_date`, and `drop_off_time` arguments in the `Search_Car_Rentals` function call contradict the dates and times specified in the user's prompt.","Fix the dates and times in the argument of Search_Car_Rentals call: ""arguments"": {
+  ""pick_up_longitude"": -93.2111968994141,
+  ""pick_up_latitude"": 44.8833999633789,
+  ""pick_up_date"": ""2024-12-02"",
+  ""pick_up_time"": ""08:00"",
+  ""drop_off_longitude"": -92.463020324707,
+  ""drop_off_latitude"": 44.0233306884766,
+  ""drop_off_date"": ""2024-12-07"",
+  ""drop_off_time"": ""17:00""
+  }"
+Cross-340,"The `pick_up_date` and `pick_up_time` arguments in the `Search_Taxi` function call are incorrect. The cheapest flight arrives on `2024-12-11` at `11:20`, so the taxi should be booked for `2024-12-11` at `11:50`. The ground-truth incorrectly uses `2024-12-10` and `11:25`.",Fix the date and time of the Search_Taxi function call into 2024-12-11 and 11:50
+Car-Rental-58,"The function call `Search_Car_Rentals` is flawed because it uses a mix of coordinates from two different locations found in the previous step. The `pick_up_latitude` and `drop_off_latitude` are from the 'Comfort Inn Philadelphia International Airport West', while the `pick_up_longitude` and `drop_off_longitude` are from the 'Philadelphia International Airport'.","Fix the coordinates of the Search_Car_Rentals call: {
+  ""name"": ""Search_Car_Rentals"",
+  ""arguments"": {
+  ""pick_up_latitude"": 39.8778,
+  ""pick_up_longitude"": -75.2443,
+  ""pick_up_date"": ""2024-11-28"",
+  ""pick_up_time"": ""08:00"",
+  ""drop_off_latitude"": 39.8778,
+  ""drop_off_longitude"": -75.2443,
+  ""drop_off_date"": ""2024-11-29"",
+  ""drop_off_time"": ""08:00""
+  }
+  }"
+Hotels-139,"The `children_age` argument in the `Get_Filter` and `Search_Hotels` function calls is '5', which contradicts the user's prompt stating the child is 'three-year-old'.",Fix the children_age parameters in Get_Filter and Search_Hotels function calls into 5
+Cross-120,"The `arrival_date` and `departure_date` arguments in both `Search_Hotels` function calls are incorrect. They are offset by one day, contradicting the user's request to stay for a week in each city starting from their arrival date as established by the flight search.","Fix the arrival_date's and departure_date's in the Search_Hotel calls : {
+  ""name"": ""Search_Hotels"",
+  ""arguments"": {
+  ""dest_id"": 20123908,
+  ""search_type"": ""city"",
+  ""arrival_date"": ""2024-12-04"",
+  ""departure_date"": ""2024-12-11"",
+  ""sort_by"": ""price""
+  }
+  }
+ and
+  {
+  ""name"": ""Search_Hotels"",
+  ""arguments"": {
+  ""dest_id"": 20112087,
+  ""search_type"": ""city"",
+  ""arrival_date"": ""2024-12-11"",
+  ""departure_date"": ""2024-12-18"",
+  ""sort_by"": ""price""
+  }
+  }"
+Cross-122,"The `arrival_date` and `departure_date` arguments in both `Search_Hotels` function calls are incorrect. The dates used (e.g., arriving in Vancouver on '2024-11-09') contradict the flight plan established in the previous steps, which has the user arriving in Vancouver on '2024-11-05'. These dates are unjustified and hallucinated.","Fix the arrival and departure dates or the two Search Hotels function calls to: ""arrival_date"": ""2024-11-05"", ""departure_date"": ""2024-11-12"" for the former one and ""arrival_date"": ""2024-11-12"", ""departure_date"": ""2024-11-19"" for the latter one"
+Cross-123,"The `arrival_date` and `departure_date` arguments in the two `Search_Hotels` function calls are incorrect. The dates provided for the Winnipeg hotel search actually correspond to the stay in Montreal. The dates for the Montreal hotel search correspond to a week-long stay in Halifax, for which the user did not request a hotel. The dates contradict the flight information from the previous step.","Fix the arrival and departure dates or the two Search Hotels function calls to: ""arrival_date"": ""2024-10-05"", ""departure_date"": ""2024-10-12"" for the former one and ""arrival_date"": ""2024-10-12"", ""departure_date"": ""2024-10-19"" for the latter one"
+Cross-373,"The `pick_up_date` argument in the final `Search_Taxi` function call is `2024-12-02`, which is incorrect. Based on the user's prompt (""Today is November 29th, 2024... for the day after tomorrow""), the date should be `2024-12-01`.","Fix the `pick_up_date` argument in the final `Search_Taxi` function call into ""2024-12-01"""
+Cross-375,"The `pick_up_date` argument in the `Search_Taxi` function call is `2024-12-20`, which is incorrect. Based on the user's prompt ('Today is November 18th, 2024' and the tour is for 'the day after tomorrow'), the date should be `2024-11-20`.","Fix the `pick_up_date` argument in the final `Search_Taxi` function call into ""2024-11-20"""
+Hotels-103,"In the `Search_Hotels` function call, the `categories_filter` argument contains an incorrect value. The value for the beachfront filter should be `beach_access::1` based on the preceding `Get_Filter` call, but the ground-truth incorrectly uses `beach_access::3`.","Fix the ""categories_filter"" argument of the Search_Hotels call into ""distance::1000,beach_access::1"""
+Cross-328,"The `Search_Flights_Multi_Stops` function call has multiple incorrect date parameters. The initial departure date is '2024-11-19' instead of the requested '2024-11-18'. Furthermore, the subsequent flight dates are calculated based on a four-day stay in each city, contradicting the user's instruction to stay for five days.","Fix Search_Flights_Multi_Stops call to: {
+  ""name"": ""Search_Flights_Multi_Stops"",
+  ""arguments"": {
+  ""sort"": ""CHEAPEST"",
+  ""legs"": [
+  {
+  ""fromId"": ""DEN.CITY"",
+  ""toId"": ""PIT.AIRPORT"",
+  ""date"": ""2024-11-18""
+  },
+  {
+  ""fromId"": ""PIT.AIRPORT"",
+  ""toId"": ""LAX.AIRPORT"",
+  ""date"": ""2024-11-23""
+  },
+  {
+  ""fromId"": ""LAX.AIRPORT"",
+  ""toId"": ""DEN.CITY"",
+  ""date"": ""2024-11-28""
+  }
+  ]
+  }
+  }"
+Cross-116,"The `pick_up_date` and `drop_off_date` arguments in the `Search_Car_Rentals` function call are incorrect. The prompt specifies picking up the car on ""the next day"" (Nov 21) and returning it on ""the third day"" (Nov 22), but the ground truth uses Nov 22 and Nov 23, respectively.","Fix Search_Car_Rental function call to: {
+  ""name"": ""Search_Car_Rentals"",
+  ""arguments"": {
+  ""pick_up_latitude"": 32.7054977,
+  ""pick_up_longitude"": -117.1601028,
+  ""drop_off_latitude"": 32.7054977,
+  ""drop_off_longitude"": -117.1601028,
+  ""pick_up_date"": ""2024-11-21"",
+  ""drop_off_date"": ""2024-11-22"",
+  ""pick_up_time"": ""10:30"",
+  ""drop_off_time"": ""10:30""
+  }
+  }"
+Cross-119,"The `pick_up_time` argument in the `Search_Car_Rentals` function call is incorrect. The user requested a pick-up time of '10 PM', which is '22:00' in 24-hour format, but the ground-truth call uses '10:00'.","Fix Search_Car_Rental function call to: 
+  {
+  ""name"": ""Search_Car_Rentals"",
+  ""arguments"": {
+  ""pick_up_latitude"": 47.6189857,
+  ""pick_up_longitude"": -122.3449886,
+  ""drop_off_latitude"": 47.6189857,
+  ""drop_off_longitude"": -122.3449886,
+  ""pick_up_date"": ""2024-11-06"",
+  ""drop_off_date"": ""2024-11-07"",
+  ""pick_up_time"": ""22:00"",
+  ""drop_off_time"": ""10:00""
+  }
+  }"
+Cross-32,"The ground-truth is flawed because it fails to check for room availability for all the hotels it found. The `Search_Hotels_By_Coordinates` call returns three hotels, but the subsequent `Get_Room_List_With_Availability` calls are only made for two of them, contradicting the user's request to find 'all' available rooms.","Add the omitted ground truth function call: {
+  ""name"": ""Get_Room_List_With_Availability"",
+  ""arguments"": {
+  ""hotel_id"": ""35262"",
+  ""arrival_date"": ""2024-11-12"",
+  ""departure_date"": ""2024-11-13""
+  } and the corresponding response
+  }"

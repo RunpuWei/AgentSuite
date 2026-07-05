@@ -1,0 +1,24 @@
+# AgentSuite benchmark suite requirements
+# Based on current working environment (agentsuite conda env)
+# Minimal requirements - benchmark packages will install their own dependencies
+
+# Core packages that may not be installed by benchmark dependencies
+openai>=1.0.0
+datasets>=2.0.0
+dill>=0.3.0
+huggingface-hub>=0.20.0
+multiprocess>=0.70.0
+numpy>=1.26.0
+overrides>=7.0.0
+pandas>=2.0.0
+pyarrow>=15.0.0
+tenacity>=8.0.0
+tree-sitter>=0.21.0
+tree-sitter-java>=0.21.0
+tree-sitter-javascript>=0.21.0
+python-dotenv
+FlagEmbedding
+anthropic>=0.40.0
+torchvision>=0.20.0
+wcwidth>=0.2.0
+openpyxl>=3.1.0

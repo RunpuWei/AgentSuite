@@ -1,0 +1,32 @@
+# Example AgentSuite leaderboard submission manifest.
+#
+# Copy this to `leaderboard/submissions/<your-model-name>.yaml`, fill it in, and
+# open a pull request. CI downloads each trajectory from Hugging Face, validates it
+# (schema + full per-benchmark task coverage), recomputes scores server-side, and
+# updates the leaderboard. The manifest carries POINTERS only — never paste scores
+# or the trajectory contents here.
+#
+# You may submit one, several, or all benchmarks. A benchmark you submit must be a
+# COMPLETE run (every in-scope task present); submitting only some benchmarks is
+# fine — your model is then ranked per-benchmark and listed under "partial coverage"
+# in the overall tab (it does not enter the common-model overall rank).
+
+model: my-model-name             # display name on the leaderboard
+submitted_by: your-github-handle # for attribution / contact
+
+# Optional, shown on the model's detail (not scored):
+meta:
+  organization: Your Org
+  url: https://example.com/your-model
+  reasoning: false               # reasoning vs. instruct, if relevant
+
+# One trajectory JSONL per benchmark, as an hf:// pointer:
+#   hf://datasets/<org>/<repo>/<path-to-file.jsonl>
+# Public datasets need no auth; private datasets require the CI HF_TOKEN to have read access.
+# Benchmark keys must be exactly: tau-bench, tau2-bench, ACEBench,
+# complex-func-bench, NexusBench, BFCL, BFCL_V4
+trajectories:
+  ACEBench: hf://datasets/your-org/my-model-agentsuite/ACEBench.jsonl
+  BFCL:     hf://datasets/your-org/my-model-agentsuite/BFCL.jsonl
+  # tau-bench: hf://datasets/your-org/my-model-agentsuite/tau-bench.jsonl
+  # ... add the benchmarks you ran

@@ -1,0 +1,87 @@
+name: Leaderboard submission
+
+# PRs that add/modify a submission manifest are validated (schema + completeness).
+# When such a change lands on main, scores are recomputed server-side and the
+# frozen CSVs + Gradio app are pushed to the Hugging Face Space.
+#
+# Required repo secret for the sync job: HF_TOKEN (write access to the Space, and
+# read access to any private trajectory datasets a submission points at).
+
+on:
+  pull_request:
+    paths:
+      - "leaderboard/submissions/**"
+  push:
+    branches: [main]
+    paths:
+      - "leaderboard/submissions/**"
+      - "leaderboard/hf_space/**"
+      - "results/splits/**"
+  workflow_dispatch: {}
+
+jobs:
+  # --- PR gate: validate every changed manifest -------------------------------
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -U huggingface_hub pyyaml
+      - name: Validate changed submission manifests
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          changed=$(git diff --name-only --diff-filter=d "$base"...HEAD \
+                    -- 'leaderboard/submissions/*.yaml' 'leaderboard/submissions/*.yml' \
+                    | grep -v 'EXAMPLE.yaml' || true)
+          if [ -z "$changed" ]; then
+            echo "No submission manifests changed."; exit 0
+          fi
+          rc=0
+          for m in $changed; do
+            echo "::group::Validating $m"
+            python leaderboard/validate_submission.py --manifest "$m" || rc=1
+            echo "::endgroup::"
+          done
+          exit $rc
+
+  # --- Post-merge: recompute scores and sync the Space ------------------------
+  publish:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -U huggingface_hub pyyaml
+
+      - name: Merge submissions into the published board (incremental)
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          # Reuse the committed reference board in results/splits/ and score ONLY the
+          # newly submitted models from their (small) manifest trajectories — no bulk
+          # reference download. Replace-by-model-name, re-rank, recompute overall.
+          python leaderboard/merge_submissions.py \
+              --manifest-dir leaderboard/submissions \
+              --splits-dir results/splits
+
+      - name: Commit refreshed CSVs
+        run: |
+          git config user.name  "agentsuite-bot"
+          git config user.email "noreply@users.noreply.github.com"
+          git add results/splits
+          git commit -m "leaderboard: recompute split scores" || echo "no changes"
+          git push || echo "nothing to push"
+
+      - name: Sync app + data to the Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python leaderboard/sync_space.py --space AgentSuite/AgentSuite

@@ -1,0 +1,14 @@
+**/__pycache__/
+**/*.pyc
+.vscode
+pipeline.log
+.env
+**/*.env
+results/*
+!results/splits/
+benchmark/
+pipeline_results/
+filtered_datasets/
+sgl-eval-peterhj-genserver/
+.archive/
+_scratch/
